@@ -133,10 +133,10 @@ class MNISTDataProvider(DataProvider):
         super(MNISTDataProvider, self).__init__(
             inputs, targets, batch_size, max_num_batches, shuffle_order, rng)
 
-    # def next(self):
+    def next(self):
     #    """Returns next data batch or raises `StopIteration` if at end."""
-    #    inputs_batch, targets_batch = super(MNISTDataProvider, self).next()
-    #    return inputs_batch, self.to_one_of_k(targets_batch)
+        inputs_batch, targets_batch = super(MNISTDataProvider, self).next()
+        return inputs_batch, self.to_one_of_k(targets_batch)
     
     def __next__(self):
         return self.next()
@@ -156,6 +156,14 @@ class MNISTDataProvider(DataProvider):
             to zero except for the column corresponding to the correct class
             which is equal to one.
         """
+        numbers = int_targets.shape[0]
+        one_k_targets=np.zeros((numbers,self.num_classes))
+
+        for i in range(numbers):
+            one_k_targets[i,int_targets[i]]=1
+
+        return one_k_targets
+        
         raise NotImplementedError()
 
 
@@ -188,21 +196,25 @@ class MetOfficeDataProvider(DataProvider):
             'Data file does not exist at expected path: ' + data_path
         )
         #TODO: load raw data from text file
-        
+        raw_df=np.loadtxt('data/HadSSP_daily_qc.txt')
         #TODO: filter out all missing datapoints and flatten to a vector
-        
+        daily_data=raw_df[:,2:]
+        valid_data=daily_data[daily_data!=-99.9]
         #TODO: normalise data to zero mean, unit standard deviation
-
+        mean = np.mean(valid_data)
+        std = np.std(valid_data)
+        norm_data = (valid_data - mean) /std
         #TODO: convert from flat sequence to windowed data
-
+        num_windows = len(data_norm) - window_size +1
+        windows = np.lib.stried_tricks.sliding_window_view(norm_data,window_size)
         #TODO: separate into inputs and targets
         # inputs are the first (window_size - 1) entries in windows
-        # inputs = ...
+        inputs = windows[:,:-1]
         # targets are the last entries in windows
-        # targets = ...
-        
+        targets = windows[:,-1]
+    
         # initialise base class with inputs and targets arrays (uncomment below)
-        # super(MetOfficeDataProvider, self).__init__(
-        #     inputs, targets, batch_size, max_num_batches, shuffle_order, rng)
+        super(MetOfficeDataProvider, self).__init__(
+            inputs, targets, batch_size, max_num_batches, shuffle_order, rng)
     def __next__(self):
             return self.next()
