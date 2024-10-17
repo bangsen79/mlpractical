@@ -45,7 +45,7 @@ class Optimiser(object):
             self.data_monitors.update(data_monitors)
         self.notebook = notebook
         if notebook:
-            self.tqdm_progress = tqdm.tqdm_notebook
+             self.tqdm_progress = tqdm.tqdm_notebook
         else:
             self.tqdm_progress = tqdm.tqdm
 
