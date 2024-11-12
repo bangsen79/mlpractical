@@ -114,7 +114,8 @@ class ExperimentBuilder(nn.Module):
         return total_num_params
 
 
-    def plot_func_def(self,all_grads, layers):
+    def plot_func_def(self,all_grads, layers): #yang ini itu butuh hasil gradien untuk model disini
+        #plotnya itu berbentuk average gradient, X itu berbentuk layer name
         
        
         """
@@ -146,11 +147,15 @@ class ExperimentBuilder(nn.Module):
         layers = []
         
         """
-        Complete the code in the block below to collect absolute mean of the gradients for each layer in all_grads with the             layer names in layers.
+        Complete the code in the block below to collect absolute mean of the gradients for each layer in all_grads with the layer names in layers.
         """
         ########################################
         #TODO write your code here
-        
+        for name, param in named_parameters:
+            layers.append(name)
+            if param.requires_grad and param.grad is not None:    
+                all_grads.append(param.grad.abs().mean().item())
+            
         ########################################
             
         
