@@ -152,9 +152,11 @@ class ExperimentBuilder(nn.Module):
         ########################################
         #TODO write your code here
         for name, param in named_parameters:
-            layers.append(name)
-            if param.requires_grad and param.grad is not None:    
-                all_grads.append(param.grad.abs().mean().item())
+            if 'bias' not in name:
+                sliced_name = name.split('.',1)[1]
+                layers.append(sliced_name)
+                if param.requires_grad and param.grad is not None:    
+                    all_grads.append(param.grad.abs().mean().item())
             
         ########################################
             
