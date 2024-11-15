@@ -135,8 +135,7 @@ class ExperimentBuilder(nn.Module):
         plt.tight_layout()
         
         return plt
-        
-    
+ 
     def plot_grad_flow(self, named_parameters):
         """
         The function is being called in Line 298 of this file. 
@@ -153,7 +152,8 @@ class ExperimentBuilder(nn.Module):
         #TODO write your code here
         for name, param in named_parameters:
             if 'bias' not in name:
-                layers.append(name)
+                shortened_name = '.'.join(name.split('.')[-2:])
+                layers.append(shortened_name)
                 if param.requires_grad and param.grad is not None:    
                     all_grads.append(param.grad.abs().mean().item())
             
